@@ -3,8 +3,8 @@ A basic proof of concept for Scrapy Streaming functionality.
   
   
   
-Start spiders using `./ScrapyStreaming "executable"`.   
-eg - `./ScrapyStreaming "python2 python/Process.py"`, `./ScrapyStreaming "ruby ruby/Process.py"`
+Start spiders using `./ScrapyStreaming.py "executable"`.   
+eg - `./ScrapyStreaming.py "python2 python/Process.py"`, `./ScrapyStreaming.py "ruby ruby/Process.py"`
 
 The communication protocol is described below.
 
