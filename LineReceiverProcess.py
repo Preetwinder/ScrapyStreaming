@@ -45,7 +45,6 @@ class StreamingFactory(Factory):
 class Communicate():
     
     def start(self, cmd):
-        
         endpoint = DisconnectedWorkaroundEndpoint(ProcessEndpoint(reactor, 
                     'stdbuf', args = ['-o0', '-e0', '-i0'] + cmd)) 
         dfd = endpoint.connect(StreamingFactory())
