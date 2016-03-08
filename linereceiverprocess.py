@@ -23,31 +23,36 @@ class DisconnectedWorkaroundEndpoint(object):
 class StreamingProtocol(LineReceiver):
 
     def lineReceived(self, line):
-        self.dfds.pop().callback(line)
+        self.lrCallback(line)
 
     def send(self, line):
         self.sendLine(line)
 
-    def setDeferred(self, dfd):
-        self.dfds.append(dfd)
-
+    def connectionLost(self, reason):
+        self.clCallback(reason)
 
 class StreamingFactory(Factory):
+
+    def __init__(self, lrCallback, clCallback):
+        self.lrCallback = lrCallback
+        self.clCallback = clCallback
 
     def buildProtocol(self, addr):
         sp = StreamingProtocol()
         sp.delimiter = '\n'
         sp.MAX_LENGTH = 10000000
+        sp.lrCallback = self.lrCallback
+        sp.clCallback = self.clCallback
         sp.dfds = []
         return sp
 
 
 class Communicate():
     
-    def start(self, cmd):
+    def start(self, cmd, lrCallback, clCallback):
         endpoint = DisconnectedWorkaroundEndpoint(ProcessEndpoint(reactor, 
                     'stdbuf', args = ['-o0', '-e0', '-i0'] + cmd)) 
-        dfd = endpoint.connect(StreamingFactory())
+        dfd = endpoint.connect(StreamingFactory(lrCallback, clCallback))
         dfd.addCallback(self.getProtocol)
 
     def getProtocol(self, protocolWrapper):
@@ -55,6 +60,3 @@ class Communicate():
 
     def send(self, line):
         self.protocol.send(line)
-
-    def get(self, dfd):
-        self.protocol.setDeferred(dfd)

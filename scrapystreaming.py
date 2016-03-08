@@ -9,28 +9,42 @@ from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 from scrapy.settings import Settings
 
-from StreamingSpider import StreamingSpider
-from LineReceiverProcess import Communicate
-from Utils import deserializeLine
+from streamingspider import StreamingSpider
+from linereceiverprocess import Communicate
+from utils import deserializeLine
 
 
 class ScrapyStreaming():
 
     def __init__(self, cmd):
-        cmd = cmd.split()
+        self.cmd = cmd.split()
         self.process = Communicate()
+        self.dfds = []
         dfd = Deferred()
         dfd.addCallback(deserializeLine)
         dfd.addCallback(self.generateSpider)
         dfd.addCallback(self.runSpider)
-        reactor.callLater(0, self.process.start, cmd)
-        reactor.callLater(0, self.process.get, dfd)
+        reactor.callLater(0, self.process.start, self.cmd, self.lineReceived, 
+                         self.connectionLost)
+        reactor.callLater(0, self.getLine, dfd)
         reactor.run()
+
+    def lineReceived(self, line):
+        self.dfds.pop().callback(line)
+
+    def connectionLost(self, reason):
+        pass
+
+    def getLine(self, dfd):
+        self.dfds.append(dfd)
+
+    def sendLine(self, line):
+        self.process.send(line)
 
     def generateSpider(self, settings):
         class Spider(StreamingSpider):
             name = settings['name']
-            process = self.process
+            process = self
             allowed_domains = settings['allowed_domains']
             start_urls = settings['start_urls']
         return Spider

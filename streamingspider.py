@@ -1,6 +1,6 @@
 import scrapy
 from twisted.internet.defer import Deferred
-from Utils import deserializeLine, serializeObject
+from utils import deserializeLine, serializeObject
 
 
 class StreamingSpider(scrapy.Spider):
@@ -8,6 +8,6 @@ class StreamingSpider(scrapy.Spider):
     def parse(self, response):
         dfd = Deferred()
         dfd.addCallback(deserializeLine)
-        self.process.get(dfd)
-        self.process.send(serializeObject(response))
+        self.process.getLine(dfd)
+        self.process.sendLine(serializeObject(response))
         return dfd

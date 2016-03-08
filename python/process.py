@@ -1,4 +1,4 @@
-from Streaming import Comptroller
+from streaming import Comptroller
 from scrapy.selector import Selector
 
 

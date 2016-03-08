@@ -3,8 +3,8 @@ A basic proof of concept for Scrapy Streaming functionality.
   
   
   
-Start spiders using `./ScrapyStreaming.py "executable"`.   
-eg - `./ScrapyStreaming.py "python2 python/Process.py"`, `./ScrapyStreaming.py "ruby ruby/Process.rb"`
+Start spiders using `./scrapystreaming.py "executable"`.   
+eg - `./scrapystreaming.py "python2 python/process.py"`, `./scrapystreaming.py "ruby ruby/process.rb"`
 
 The communication protocol is described below.
 
@@ -34,3 +34,4 @@ Requests should be serialized as -
 Items should be serialized as -  
   
 `{"type":"item", "name":"post", "item":{"title":"test"}}\n`
+

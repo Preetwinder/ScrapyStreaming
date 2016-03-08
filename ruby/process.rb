@@ -1,5 +1,5 @@
 require 'nokogiri'
-require_relative 'Streaming'
+require_relative 'streaming'
 
 
 def parse(response)
